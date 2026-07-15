@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { Link } from 'react-router-dom';
 
 /**
  * Logo 컴포넌트
@@ -12,7 +13,19 @@ import Typography from '@mui/material/Typography';
  */
 function Logo({ size = 28 }) {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <Box
+      component={Link}
+      to="/"
+      onClick={() => window.scrollTo(0, 0)}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        textDecoration: 'none',
+        color: 'inherit',
+        cursor: 'pointer',
+      }}
+    >
       <Box
         sx={{
           position: 'relative',

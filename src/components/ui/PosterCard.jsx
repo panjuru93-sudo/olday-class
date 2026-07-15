@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const MotionBox = motion.create(Box);
 
@@ -13,15 +14,17 @@ const MotionBox = motion.create(Box);
  * @param {string} title - 대형 헤드라인, 줄바꿈은 개행 문자로 구분 [Optional, text variant에서 사용]
  * @param {string} caption - 하단 캡션 [Required]
  * @param {node} icon - 아이콘 엘리먼트 [Optional, icon variant에서 사용]
+ * @param {string} to - 클릭 시 이동할 경로 [Optional, 없으면 링크 없이 렌더링]
  *
  * Example usage:
- * <PosterCard variant="text" eyebrow="FLOWER" title={'지루하면,\n꽂아라.'} caption="꽃꽂이 원데이 클래스" />
+ * <PosterCard variant="text" to="/class/flower" eyebrow="FLOWER" title={'지루하면,\n꽂아라.'} caption="꽃꽂이 원데이 클래스" />
  */
-function PosterCard({ variant, eyebrow, title, caption, icon }) {
+function PosterCard({ variant, eyebrow, title, caption, icon, to }) {
   const isText = variant === 'text';
 
   return (
     <MotionBox
+      {...(to ? { component: Link, to } : {})}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.4 }}
@@ -38,6 +41,7 @@ function PosterCard({ variant, eyebrow, title, caption, icon }) {
         border: isText ? 'none' : '1px solid',
         borderColor: 'divider',
         color: isText ? 'primary.contrastText' : 'text.primary',
+        textDecoration: 'none',
         cursor: 'pointer',
         overflow: 'hidden',
       }}

@@ -158,6 +158,7 @@ function ClassDetail() {
 
           <Box sx={{ position: { md: 'sticky' }, top: { md: '90px' }, alignSelf: 'flex-start' }}>
             <BookingPanel
+              key={category.slug}
               price={price}
               schedule={schedule}
               classSlug={category.slug}

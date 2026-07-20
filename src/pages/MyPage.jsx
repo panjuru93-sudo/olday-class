@@ -6,16 +6,32 @@ import Header from '../components/common/Header.jsx';
 import Footer from '../components/common/Footer.jsx';
 import { useBookings } from '../hooks/useBookings.js';
 
+function groupBookingsByClass(bookings) {
+  const groups = new Map();
+
+  bookings.forEach((booking) => {
+    const key = booking.slug ?? booking.classTitle ?? 'unknown';
+    if (!groups.has(key)) {
+      groups.set(key, { slug: booking.slug, classTitle: booking.classTitle, items: [] });
+    }
+    groups.get(key).items.push(booking);
+  });
+
+  return Array.from(groups.values());
+}
+
 /**
  * MyPage 컴포넌트
  *
- * 내가 예약한 클래스 목록을 보여주고, 각 예약을 취소할 수 있는 마이페이지입니다.
+ * 내가 예약한 클래스 목록을 예약 페이지(클래스)별로 묶어서 보여주고,
+ * 각 예약을 취소할 수 있는 마이페이지입니다.
  *
  * Example usage:
  * <MyPage />
  */
 function MyPage() {
   const { bookings, cancelBooking } = useBookings();
+  const groupedBookings = groupBookingsByClass(bookings);
 
   return (
     <Box sx={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -47,43 +63,66 @@ function MyPage() {
             </Typography>
           </Box>
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {bookings.map((booking) => (
-              <Box
-                key={booking.id}
-                sx={{
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  p: { xs: 2.5, md: 3 },
-                  display: 'flex',
-                  flexDirection: { xs: 'column', md: 'row' },
-                  justifyContent: 'space-between',
-                  alignItems: { xs: 'flex-start', md: 'center' },
-                  gap: 2,
-                }}
-              >
-                <Box>
-                  <Typography sx={{ fontSize: '1rem', fontWeight: 700, mb: 0.5 }}>
-                    {booking.classTitle || '클래스 정보 없음'}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 4, md: 5 } }}>
+            {groupedBookings.map((group) => (
+              <Box key={group.slug ?? group.classTitle}>
+                {group.slug ? (
+                  <Typography
+                    component={Link}
+                    to={`/class/${group.slug}`}
+                    sx={{
+                      fontSize: '1.05rem',
+                      fontWeight: 700,
+                      mb: 1.5,
+                      display: 'inline-block',
+                      color: 'text.primary',
+                      textDecoration: 'none',
+                      '&:hover': { color: 'primary.main' },
+                    }}
+                  >
+                    {group.classTitle || '클래스 정보 없음'}
                   </Typography>
-                  <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>
-                    {booking.date} · {booking.participants}명 · {booking.totalPrice?.toLocaleString('ko-KR')}원
+                ) : (
+                  <Typography component="h2" sx={{ fontSize: '1.05rem', fontWeight: 700, mb: 1.5 }}>
+                    {group.classTitle || '클래스 정보 없음'}
                   </Typography>
-                </Box>
+                )}
 
-                <Button
-                  variant="outlined"
-                  onClick={() => cancelBooking(booking.id)}
-                  sx={{
-                    borderRadius: 0,
-                    borderColor: 'text.primary',
-                    color: 'text.primary',
-                    flexShrink: 0,
-                    '&:hover': { borderColor: 'primary.main', color: 'primary.main' },
-                  }}
-                >
-                  예약 취소
-                </Button>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                  {group.items.map((booking) => (
+                    <Box
+                      key={booking.id}
+                      sx={{
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        p: { xs: 2.5, md: 3 },
+                        display: 'flex',
+                        flexDirection: { xs: 'column', md: 'row' },
+                        justifyContent: 'space-between',
+                        alignItems: { xs: 'flex-start', md: 'center' },
+                        gap: 2,
+                      }}
+                    >
+                      <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>
+                        {booking.date} · {booking.participants}명 · {booking.totalPrice?.toLocaleString('ko-KR')}원
+                      </Typography>
+
+                      <Button
+                        variant="outlined"
+                        onClick={() => cancelBooking(booking.id)}
+                        sx={{
+                          borderRadius: 0,
+                          borderColor: 'text.primary',
+                          color: 'text.primary',
+                          flexShrink: 0,
+                          '&:hover': { borderColor: 'primary.main', color: 'primary.main' },
+                        }}
+                      >
+                        예약 취소
+                      </Button>
+                    </Box>
+                  ))}
+                </Box>
               </Box>
             ))}
           </Box>

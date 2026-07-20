@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Logo from '../ui/Logo.jsx';
 
 const CATEGORY_NAV_LINKS = [
@@ -15,6 +15,14 @@ const CATEGORY_NAV_LINKS = [
 function Header() {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const location = useLocation();
+
+  const handleBookNowClick = (event) => {
+    if (location.pathname === '/') {
+      event.preventDefault();
+      document.getElementById('category-grid')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <Box
@@ -88,6 +96,8 @@ function Header() {
       <Button
         component={Link}
         to="/"
+        state={{ scrollToCategory: true }}
+        onClick={handleBookNowClick}
         variant="contained"
         color="primary"
         sx={{ borderRadius: 0, px: { xs: 2, md: 3 }, fontSize: '0.8rem' }}

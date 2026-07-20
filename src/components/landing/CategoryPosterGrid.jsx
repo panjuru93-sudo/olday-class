@@ -6,7 +6,7 @@ import PosterCard from '../ui/PosterCard.jsx';
 
 function CategoryPosterGrid() {
   return (
-    <Box component="section" sx={{ px: { xs: 2, md: 4 }, py: { xs: 6, md: 9 } }}>
+    <Box id="category-grid" component="section" sx={{ px: { xs: 2, md: 4 }, py: { xs: 6, md: 9 } }}>
       <Typography
         sx={{
           fontSize: '0.75rem',

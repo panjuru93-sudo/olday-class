@@ -6,6 +6,7 @@ import CelebrationRoundedIcon from '@mui/icons-material/CelebrationRounded';
 import SpaRoundedIcon from '@mui/icons-material/SpaRounded';
 import TheaterComedyRoundedIcon from '@mui/icons-material/TheaterComedyRounded';
 import LocalActivityRoundedIcon from '@mui/icons-material/LocalActivityRounded';
+import MicRoundedIcon from '@mui/icons-material/MicRounded';
 
 export const CATEGORIES = [
   {
@@ -166,6 +167,26 @@ export const CATEGORIES = [
     reviews: [
       { name: 'adrenaline', rating: 5, comment: '초보자용 코스도 있어서 무섭지 않게 시작할 수 있었어요.' },
       { name: 'weekend_run', rating: 5, comment: '장비를 다 대여해줘서 몸만 가면 돼요. 스트레스 풀기 좋습니다.' },
+    ],
+  },
+  {
+    slug: 'music',
+    eyebrow: 'MUSIC',
+    posterTitle: '심심하면,\n불러라.',
+    detailTitle: '보컬 트레이닝 원데이 클래스',
+    categoryLabel: '음악 원데이 클래스',
+    browseCaption: '음악 클래스 보러가기',
+    icon: <MicRoundedIcon fontSize="inherit" />,
+    price: 45000,
+    duration: '1시간 30분',
+    location: '서울 합정동 사운드스튜디오',
+    host: '보컬트레이너 이수민',
+    description:
+      '발성 기초부터 좋아하는 곡 한 소절을 완성하는 보컬 트레이닝 클래스. 처음 노래를 배우는 분도 부담 없이 참여할 수 있어요.',
+    schedule: ['7월 19일(토) 17:00', '7월 20일(일) 17:00', '7월 26일(토) 17:00'],
+    reviews: [
+      { name: 'sing_song', rating: 5, comment: '발성 교정만으로 소리가 확 달라져서 놀랐어요.' },
+      { name: 'mic_check', rating: 4, comment: '좋아하는 곡으로 연습할 수 있어서 재미있게 배웠습니다.' },
     ],
   },
 ];

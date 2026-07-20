@@ -10,6 +10,11 @@ const CATEGORY_NAV_LINKS = [
   { label: '꽃꽂이', slug: 'flower' },
   { label: '베이킹', slug: 'baking' },
   { label: '글라스아트', slug: 'glass-art' },
+  { label: '연극', slug: 'theater' },
+  { label: '액티비티', slug: 'activity' },
+  { label: '뷰티', slug: 'beauty' },
+  { label: '춤', slug: 'dance' },
+  { label: '음악', slug: 'music' },
 ];
 
 function Header() {
@@ -44,7 +49,11 @@ function Header() {
       <Logo />
 
       {isDesktop && (
-        <Stack direction="row" spacing={4}>
+        <Stack
+          direction="row"
+          spacing={2.5}
+          sx={{ flexWrap: 'wrap', rowGap: 1, justifyContent: 'center' }}
+        >
           {CATEGORY_NAV_LINKS.map(({ label, slug }) => (
             <Button
               key={slug}

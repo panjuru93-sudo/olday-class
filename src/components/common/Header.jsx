@@ -6,7 +6,11 @@ import { useTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import Logo from '../ui/Logo.jsx';
 
-const NAV_LINKS = ['꽃꽂이', '베이킹', '글라스아트', '호스트 지원'];
+const CATEGORY_NAV_LINKS = [
+  { label: '꽃꽂이', slug: 'flower' },
+  { label: '베이킹', slug: 'baking' },
+  { label: '글라스아트', slug: 'glass-art' },
+];
 
 function Header() {
   const theme = useTheme();
@@ -33,9 +37,11 @@ function Header() {
 
       {isDesktop && (
         <Stack direction="row" spacing={4}>
-          {NAV_LINKS.map((link) => (
+          {CATEGORY_NAV_LINKS.map(({ label, slug }) => (
             <Button
-              key={link}
+              key={slug}
+              component={Link}
+              to={`/class/${slug}`}
               sx={{
                 color: 'text.primary',
                 fontSize: '0.85rem',
@@ -45,9 +51,21 @@ function Header() {
                 '&:hover': { color: 'primary.main', bgcolor: 'transparent' },
               }}
             >
-              {link}
+              {label}
             </Button>
           ))}
+          <Button
+            sx={{
+              color: 'text.primary',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              minWidth: 'auto',
+              p: 0,
+              '&:hover': { color: 'primary.main', bgcolor: 'transparent' },
+            }}
+          >
+            호스트 지원
+          </Button>
           <Button
             component={Link}
             to="/mypage"

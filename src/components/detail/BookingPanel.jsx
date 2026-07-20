@@ -3,9 +3,11 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import { Link } from 'react-router-dom';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import { useBookings } from '../../hooks/useBookings.js';
 
 const MIN_PARTICIPANTS = 1;
 const MAX_PARTICIPANTS = 6;
@@ -16,18 +18,40 @@ const MAX_PARTICIPANTS = 6;
  * Props:
  * @param {number} price - 1인 참가비(원) [Required]
  * @param {Array<string>} schedule - 예약 가능한 일정 목록 [Required]
+ * @param {string} classSlug - 클래스 slug [Required]
+ * @param {string} classTitle - 클래스 제목 [Required]
  *
  * Example usage:
- * <BookingPanel price={60000} schedule={['7월 19일(토) 14:00']} />
+ * <BookingPanel price={60000} schedule={['7월 19일(토) 14:00']} classSlug="flower" classTitle="제철 꽃으로 완성하는 계절 부케" />
  */
-function BookingPanel({ price, schedule }) {
+function BookingPanel({ price, schedule, classSlug, classTitle }) {
+  const { addBooking, cancelBooking } = useBookings();
   const [selectedDate, setSelectedDate] = useState(null);
   const [participantCount, setParticipantCount] = useState(MIN_PARTICIPANTS);
-  const [isBooked, setIsBooked] = useState(false);
+  const [bookingId, setBookingId] = useState(null);
 
   const totalPrice = price * participantCount;
 
-  if (isBooked) {
+  const handleBook = () => {
+    const id = crypto.randomUUID();
+    addBooking({
+      id,
+      slug: classSlug,
+      classTitle,
+      date: selectedDate,
+      participants: participantCount,
+      unitPrice: price,
+      totalPrice,
+    });
+    setBookingId(id);
+  };
+
+  const handleCancel = () => {
+    cancelBooking(bookingId);
+    setBookingId(null);
+  };
+
+  if (bookingId) {
     return (
       <Box
         sx={{
@@ -49,6 +73,27 @@ function BookingPanel({ price, schedule }) {
           {selectedDate} 일정으로 {participantCount}명 예약 요청을 받았어요. 호스트가 확인 후
           안내드릴게요.
         </Typography>
+        <Typography
+          component={Link}
+          to="/mypage"
+          sx={{ fontSize: '0.82rem', color: 'primary.main', textDecoration: 'none', mt: 1 }}
+        >
+          마이페이지에서 확인하기 →
+        </Typography>
+        <Button
+          fullWidth
+          variant="outlined"
+          onClick={handleCancel}
+          sx={{
+            borderRadius: 0,
+            mt: 2,
+            borderColor: 'text.primary',
+            color: 'text.primary',
+            '&:hover': { borderColor: 'primary.main', color: 'primary.main' },
+          }}
+        >
+          예약 취소
+        </Button>
       </Box>
     );
   }
@@ -139,7 +184,7 @@ function BookingPanel({ price, schedule }) {
         color="primary"
         size="large"
         disabled={!selectedDate}
-        onClick={() => setIsBooked(true)}
+        onClick={handleBook}
         sx={{ borderRadius: 0 }}
       >
         예약하기

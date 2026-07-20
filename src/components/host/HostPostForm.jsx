@@ -3,8 +3,25 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+
+const CATEGORY_OPTIONS = [
+  { slug: 'flower', label: '꽃꽂이' },
+  { slug: 'baking', label: '베이킹' },
+  { slug: 'glass-art', label: '글라스아트' },
+  { slug: 'dance', label: '댄스' },
+  { slug: 'solo-party', label: '솔로파티' },
+  { slug: 'beauty', label: '뷰티' },
+  { slug: 'theater', label: '연극' },
+  { slug: 'activity', label: '액티비티' },
+  { slug: 'etc', label: '기타' },
+];
 
 const EMPTY_POST_FORM = {
+  category: '',
   detailTitle: '',
   categoryLabel: '',
   price: '',
@@ -54,6 +71,7 @@ function HostPostForm({ initialValues, submitLabel, onSubmit, onCancel }) {
 
     setSubmitting(true);
     const result = await onSubmit({
+      category: form.category,
       detailTitle: form.detailTitle,
       categoryLabel: form.categoryLabel,
       price,
@@ -88,6 +106,21 @@ function HostPostForm({ initialValues, submitLabel, onSubmit, onCancel }) {
         value={form.detailTitle}
         onChange={updateField('detailTitle')}
       />
+      <FormControl required size="small" sx={inputSx}>
+        <InputLabel id="host-post-category-label">카테고리</InputLabel>
+        <Select
+          labelId="host-post-category-label"
+          label="카테고리"
+          value={form.category}
+          onChange={updateField('category')}
+        >
+          {CATEGORY_OPTIONS.map((option) => (
+            <MenuItem key={option.slug} value={option.slug}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <TextField
         label="카테고리 라벨 (예: 캘리그라피 원데이 클래스)"
         required

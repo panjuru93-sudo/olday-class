@@ -8,6 +8,7 @@ import HostPostForm from './HostPostForm.jsx';
 
 function rowToFormValues(row) {
   return {
+    category: row.category ?? '',
     detailTitle: row.detail_title,
     categoryLabel: row.category_label,
     price: String(row.price),
@@ -52,6 +53,7 @@ function MyClassManager({ userId }) {
           const { error } = await supabase
             .from('host_classes')
             .update({
+              category: values.category,
               detail_title: values.detailTitle,
               category_label: values.categoryLabel,
               price: values.price,

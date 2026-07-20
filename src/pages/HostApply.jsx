@@ -82,6 +82,7 @@ function HostApply() {
       .from('host_classes')
       .insert({
         host_id: user.id,
+        category: values.category,
         detail_title: values.detailTitle,
         category_label: values.categoryLabel,
         price: values.price,

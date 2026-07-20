@@ -4,8 +4,12 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import Header from '../components/common/Header.jsx';
 import Footer from '../components/common/Footer.jsx';
+import HostPostForm from '../components/host/HostPostForm.jsx';
+import MyClassManager from '../components/host/MyClassManager.jsx';
 import { useAuth } from '../hooks/useAuth.js';
 import { useHostClasses } from '../hooks/useHostClasses.js';
 import { supabase } from '../lib/supabase.js';
@@ -25,24 +29,13 @@ const BENEFITS = [
   },
 ];
 
-const EMPTY_POST_FORM = {
-  detailTitle: '',
-  categoryLabel: '',
-  price: '',
-  duration: '',
-  location: '',
-  hostName: '',
-  description: '',
-  schedule: '',
-};
-
 const inputSx = { '& .MuiOutlinedInput-root': { borderRadius: 0 } };
 
 /**
  * HostApply 컴포넌트
  *
  * 올데이 클래스의 호스트로 지원할 수 있는 안내 페이지입니다.
- * 로그인/회원가입 후 직접 클래스 게시물을 등록할 수 있습니다.
+ * 로그인/회원가입 후 클래스 게시물을 등록하거나 기존 게시물을 수정할 수 있습니다.
  *
  * Example usage:
  * <HostApply />
@@ -57,9 +50,7 @@ function HostApply() {
   const [authNotice, setAuthNotice] = useState('');
   const [authSubmitting, setAuthSubmitting] = useState(false);
 
-  const [postForm, setPostForm] = useState(EMPTY_POST_FORM);
-  const [postError, setPostError] = useState('');
-  const [postSubmitting, setPostSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState('create');
   const [createdClassId, setCreatedClassId] = useState(null);
 
   const handleAuthSubmit = async (event) => {
@@ -86,48 +77,28 @@ function HostApply() {
     }
   };
 
-  const handlePostSubmit = async (event) => {
-    event.preventDefault();
-    setPostError('');
-
-    const price = Number(postForm.price);
-    const hasEmptyField = Object.entries(postForm).some(
-      ([key, value]) => key !== 'schedule' && !value,
-    );
-    if (hasEmptyField || !price) {
-      setPostError('일정을 제외한 모든 항목을 입력해주세요.');
-      return;
-    }
-
-    setPostSubmitting(true);
+  const handleCreatePost = async (values) => {
     const { data, error } = await supabase
       .from('host_classes')
       .insert({
         host_id: user.id,
-        detail_title: postForm.detailTitle,
-        category_label: postForm.categoryLabel,
-        price,
-        duration: postForm.duration,
-        location: postForm.location,
-        host_name: postForm.hostName,
-        description: postForm.description,
-        schedule: postForm.schedule
-          .split(',')
-          .map((item) => item.trim())
-          .filter(Boolean),
+        detail_title: values.detailTitle,
+        category_label: values.categoryLabel,
+        price: values.price,
+        duration: values.duration,
+        location: values.location,
+        host_name: values.hostName,
+        description: values.description,
+        schedule: values.schedule,
       })
       .select()
       .single();
-    setPostSubmitting(false);
 
-    if (error) {
-      setPostError(error.message);
-      return;
+    if (!error) {
+      setCreatedClassId(data.id);
+      refresh();
     }
-
-    setCreatedClassId(data.id);
-    setPostForm(EMPTY_POST_FORM);
-    refresh();
+    return { error };
   };
 
   return (
@@ -246,8 +217,8 @@ function HostApply() {
             </Box>
           ) : (
             <Box sx={{ border: '1px solid', borderColor: 'divider', p: { xs: 2.5, md: 3.5 } }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography sx={{ fontSize: '1.1rem', fontWeight: 700 }}>클래스 게시물 등록</Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography sx={{ fontSize: '1.1rem', fontWeight: 700 }}>클래스 게시물 관리</Typography>
                 <Button
                   size="small"
                   onClick={signOut}
@@ -257,102 +228,34 @@ function HostApply() {
                 </Button>
               </Box>
 
-              {createdClassId && (
-                <Box sx={{ border: '1px solid', borderColor: 'primary.main', p: 2, mb: 2.5 }}>
-                  <Typography sx={{ fontSize: '0.88rem', mb: 0.5 }}>게시물이 등록되었어요!</Typography>
-                  <Typography
-                    component={Link}
-                    to={`/class/${createdClassId}`}
-                    sx={{ fontSize: '0.85rem', color: 'primary.main', textDecoration: 'none' }}
-                  >
-                    등록한 클래스 보러가기 →
-                  </Typography>
-                </Box>
+              <Tabs
+                value={activeTab}
+                onChange={(_event, value) => setActiveTab(value)}
+                sx={{ minHeight: 'auto', mb: 2.5, borderBottom: '1px solid', borderColor: 'divider' }}
+              >
+                <Tab value="create" label="게시물 등록" sx={{ minHeight: 'auto', py: 1 }} />
+                <Tab value="manage" label="내 게시물 수정" sx={{ minHeight: 'auto', py: 1 }} />
+              </Tabs>
+
+              {activeTab === 'create' ? (
+                <>
+                  {createdClassId && (
+                    <Box sx={{ border: '1px solid', borderColor: 'primary.main', p: 2, mb: 2.5 }}>
+                      <Typography sx={{ fontSize: '0.88rem', mb: 0.5 }}>게시물이 등록되었어요!</Typography>
+                      <Typography
+                        component={Link}
+                        to={`/class/${createdClassId}`}
+                        sx={{ fontSize: '0.85rem', color: 'primary.main', textDecoration: 'none' }}
+                      >
+                        등록한 클래스 보러가기 →
+                      </Typography>
+                    </Box>
+                  )}
+                  <HostPostForm submitLabel="게시물 등록" onSubmit={handleCreatePost} />
+                </>
+              ) : (
+                <MyClassManager userId={user.id} />
               )}
-
-              <Box component="form" onSubmit={handlePostSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <TextField
-                  label="클래스 제목"
-                  required
-                  size="small"
-                  sx={inputSx}
-                  value={postForm.detailTitle}
-                  onChange={(event) => setPostForm((prev) => ({ ...prev, detailTitle: event.target.value }))}
-                />
-                <TextField
-                  label="카테고리 라벨 (예: 캘리그라피 원데이 클래스)"
-                  required
-                  size="small"
-                  sx={inputSx}
-                  value={postForm.categoryLabel}
-                  onChange={(event) => setPostForm((prev) => ({ ...prev, categoryLabel: event.target.value }))}
-                />
-                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-                  <TextField
-                    type="number"
-                    label="1인 참가비(원)"
-                    required
-                    size="small"
-                    sx={inputSx}
-                    value={postForm.price}
-                    onChange={(event) => setPostForm((prev) => ({ ...prev, price: event.target.value }))}
-                  />
-                  <TextField
-                    label="소요시간 (예: 2시간)"
-                    required
-                    size="small"
-                    sx={inputSx}
-                    value={postForm.duration}
-                    onChange={(event) => setPostForm((prev) => ({ ...prev, duration: event.target.value }))}
-                  />
-                </Box>
-                <TextField
-                  label="장소"
-                  required
-                  size="small"
-                  sx={inputSx}
-                  value={postForm.location}
-                  onChange={(event) => setPostForm((prev) => ({ ...prev, location: event.target.value }))}
-                />
-                <TextField
-                  label="호스트 이름"
-                  required
-                  size="small"
-                  sx={inputSx}
-                  value={postForm.hostName}
-                  onChange={(event) => setPostForm((prev) => ({ ...prev, hostName: event.target.value }))}
-                />
-                <TextField
-                  label="클래스 소개"
-                  required
-                  multiline
-                  minRows={3}
-                  size="small"
-                  sx={inputSx}
-                  value={postForm.description}
-                  onChange={(event) => setPostForm((prev) => ({ ...prev, description: event.target.value }))}
-                />
-                <TextField
-                  label="예약 가능 일정 (쉼표로 구분, 예: 7월 19일(토) 14:00, 7월 20일(일) 11:00)"
-                  size="small"
-                  sx={inputSx}
-                  value={postForm.schedule}
-                  onChange={(event) => setPostForm((prev) => ({ ...prev, schedule: event.target.value }))}
-                />
-
-                {postError && <Typography sx={{ fontSize: '0.82rem', color: 'error.main' }}>{postError}</Typography>}
-
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  disabled={postSubmitting}
-                  sx={{ borderRadius: 0 }}
-                >
-                  게시물 등록
-                </Button>
-              </Box>
             </Box>
           )}
         </Box>

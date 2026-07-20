@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { Link } from 'react-router-dom';
 import Logo from '../ui/Logo.jsx';
 
 const NAV_LINKS = ['꽃꽂이', '베이킹', '글라스아트', '호스트 지원'];
@@ -47,10 +48,26 @@ function Header() {
               {link}
             </Button>
           ))}
+          <Button
+            component={Link}
+            to="/mypage"
+            sx={{
+              color: 'text.primary',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              minWidth: 'auto',
+              p: 0,
+              '&:hover': { color: 'primary.main', bgcolor: 'transparent' },
+            }}
+          >
+            마이페이지
+          </Button>
         </Stack>
       )}
 
       <Button
+        component={Link}
+        to="/"
         variant="contained"
         color="primary"
         sx={{ borderRadius: 0, px: { xs: 2, md: 3 }, fontSize: '0.8rem' }}

@@ -21,7 +21,7 @@ function ClassDetail() {
           </Typography>
           <Typography
             component={Link}
-            to="/"
+            to="/classes"
             sx={{ fontSize: '0.9rem', color: 'primary.main', textDecoration: 'none' }}
           >
             ← 전체 클래스 보기
@@ -42,7 +42,7 @@ function ClassDetail() {
       <Box component="section" sx={{ px: { xs: 2, md: 4 }, pt: { xs: 4, md: 6 } }}>
         <Typography
           component={Link}
-          to="/"
+          to="/classes"
           sx={{ fontSize: '0.8rem', color: 'text.secondary', textDecoration: 'none' }}
         >
           ← 전체 클래스 보기

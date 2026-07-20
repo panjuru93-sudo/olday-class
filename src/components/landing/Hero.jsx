@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const MotionTypography = motion.create(Typography);
 
@@ -64,6 +65,8 @@ function Hero() {
 
       <Stack direction="row" spacing={1.5} sx={{ mt: { xs: 3, md: 4 } }}>
         <Button
+          component={Link}
+          to="/classes"
           variant="contained"
           color="primary"
           size="large"
@@ -72,6 +75,8 @@ function Hero() {
           클래스 둘러보기
         </Button>
         <Button
+          component={Link}
+          to="/host"
           variant="outlined"
           size="large"
           sx={{

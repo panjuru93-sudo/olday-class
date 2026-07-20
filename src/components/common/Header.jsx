@@ -55,6 +55,8 @@ function Header() {
             </Button>
           ))}
           <Button
+            component={Link}
+            to="/host"
             sx={{
               color: 'text.primary',
               fontSize: '0.85rem',

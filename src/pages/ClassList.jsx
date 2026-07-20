@@ -5,16 +5,22 @@ import Grid from '@mui/material/Grid';
 import Header from '../components/common/Header.jsx';
 import Footer from '../components/common/Footer.jsx';
 import { CATEGORIES } from '../data/categories.jsx';
+import { useHostClasses } from '../hooks/useHostClasses.js';
+import { mapHostClassToCategory } from '../utils/mapHostClass.jsx';
 
 /**
  * ClassList 컴포넌트
  *
  * 전체 클래스를 한 페이지에서 둘러보고 고를 수 있는 목록 페이지입니다.
+ * 기본 제공 클래스와 호스트가 등록한 클래스를 함께 보여줍니다.
  *
  * Example usage:
  * <ClassList />
  */
 function ClassList() {
+  const { hostClasses } = useHostClasses();
+  const allClasses = [...CATEGORIES, ...hostClasses.map(mapHostClassToCategory)];
+
   return (
     <Box sx={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
@@ -37,7 +43,7 @@ function ClassList() {
         </Typography>
 
         <Grid container spacing={{ xs: 2, md: 3 }}>
-          {CATEGORIES.map((category) => (
+          {allClasses.map((category) => (
             <Grid key={category.slug} size={{ xs: 12, sm: 6, md: 4 }}>
               <Box
                 component={Link}

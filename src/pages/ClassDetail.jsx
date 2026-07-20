@@ -6,10 +6,24 @@ import Footer from '../components/common/Footer.jsx';
 import BookingPanel from '../components/detail/BookingPanel.jsx';
 import ReviewList from '../components/detail/ReviewList.jsx';
 import { getCategoryBySlug } from '../data/categories.jsx';
+import { useHostClasses } from '../hooks/useHostClasses.js';
+import { mapHostClassToCategory } from '../utils/mapHostClass.jsx';
 
 function ClassDetail() {
   const { slug } = useParams();
-  const category = getCategoryBySlug(slug);
+  const staticCategory = getCategoryBySlug(slug);
+  const { hostClasses, loading: hostClassesLoading } = useHostClasses();
+  const hostRow = hostClasses.find((row) => row.id === slug);
+  const category = staticCategory ?? (hostRow ? mapHostClassToCategory(hostRow) : null);
+
+  if (!category && !staticCategory && hostClassesLoading) {
+    return (
+      <Box sx={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Header />
+        <Footer />
+      </Box>
+    );
+  }
 
   if (!category) {
     return (

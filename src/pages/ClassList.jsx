@@ -1,12 +1,43 @@
-import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Header from '../components/common/Header.jsx';
 import Footer from '../components/common/Footer.jsx';
+import ClassCard from '../components/class/ClassCard.jsx';
 import { CATEGORIES } from '../data/categories.jsx';
 import { useHostClasses } from '../hooks/useHostClasses.js';
 import { mapHostClassToCategory } from '../utils/mapHostClass.jsx';
+
+/**
+ * groupClassesByCategory 함수
+ *
+ * 기본 카테고리와 호스트 클래스를 같은 종류(카테고리)끼리 묶어줍니다.
+ * 기본 카테고리 순서를 그룹 순서로 사용하고, 기본 카테고리에 없는
+ * 호스트 전용 카테고리는 등장한 순서대로 뒤에 이어붙입니다.
+ *
+ * @param {Array} mappedHostClasses - mapHostClassToCategory로 변환된 호스트 클래스 목록 [Required]
+ *
+ * Example usage:
+ * const groups = groupClassesByCategory(hostClasses.map(mapHostClassToCategory));
+ */
+function groupClassesByCategory(mappedHostClasses) {
+  const groups = new Map();
+
+  CATEGORIES.forEach((category) => {
+    groups.set(category.slug, { key: category.slug, label: category.categoryLabel, items: [category] });
+  });
+
+  mappedHostClasses.forEach((hostClass) => {
+    const key = groups.has(hostClass.categorySlug) ? hostClass.categorySlug : hostClass.slug;
+
+    if (!groups.has(key)) {
+      groups.set(key, { key, label: hostClass.categoryLabel, items: [] });
+    }
+    groups.get(key).items.push(hostClass);
+  });
+
+  return Array.from(groups.values());
+}
 
 /**
  * ClassList 컴포넌트
@@ -19,7 +50,7 @@ import { mapHostClassToCategory } from '../utils/mapHostClass.jsx';
  */
 function ClassList() {
   const { hostClasses } = useHostClasses();
-  const allClasses = [...CATEGORIES, ...hostClasses.map(mapHostClassToCategory)];
+  const groupedClasses = groupClassesByCategory(hostClasses.map(mapHostClassToCategory));
 
   return (
     <Box sx={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -42,42 +73,24 @@ function ClassList() {
           전체 클래스 둘러보기
         </Typography>
 
-        <Grid container spacing={{ xs: 2, md: 3 }}>
-          {allClasses.map((category) => (
-            <Grid key={category.slug} size={{ xs: 12, sm: 6, md: 4 }}>
-              <Box
-                component={Link}
-                to={`/class/${category.slug}`}
-                sx={{
-                  display: 'block',
-                  height: '100%',
-                  textDecoration: 'none',
-                  color: 'text.primary',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  p: { xs: 2.5, md: 3 },
-                  '&:hover': { borderColor: 'primary.main' },
-                }}
-              >
-                <Box sx={{ fontSize: '2.2rem', color: 'primary.main', mb: 1.5 }}>{category.icon}</Box>
-                <Typography
-                  sx={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.08em', color: 'primary.main', mb: 0.5 }}
-                >
-                  {`[ ${category.eyebrow} ]`}
-                </Typography>
-                <Typography sx={{ fontSize: '1.05rem', fontWeight: 700, mb: 1 }}>
-                  {category.detailTitle}
-                </Typography>
-                <Typography sx={{ fontSize: '0.82rem', color: 'text.secondary', mb: 1.5 }}>
-                  {category.duration} · {category.location}
-                </Typography>
-                <Typography sx={{ fontSize: '0.95rem', fontWeight: 700 }}>
-                  {category.price.toLocaleString('ko-KR')}원~
-                </Typography>
-              </Box>
+        {groupedClasses.map((group) => (
+          <Box key={group.key} component="section" sx={{ mb: { xs: 4, md: 5 } }}>
+            <Typography
+              component="h2"
+              sx={{ fontSize: { xs: '1.05rem', md: '1.2rem' }, fontWeight: 700, mb: { xs: 1.5, md: 2 } }}
+            >
+              {group.label}
+            </Typography>
+
+            <Grid container spacing={{ xs: 2, md: 3 }}>
+              {group.items.map((category) => (
+                <Grid key={category.slug} size={{ xs: 12, sm: 6, md: 4 }}>
+                  <ClassCard category={category} />
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+          </Box>
+        ))}
       </Box>
 
       <Footer />

@@ -5,17 +5,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../ui/Logo.jsx';
-
-const CATEGORY_NAV_LINKS = [
-  { label: '꽃꽂이', slug: 'flower' },
-  { label: '베이킹', slug: 'baking' },
-  { label: '글라스아트', slug: 'glass-art' },
-  { label: '연극', slug: 'theater' },
-  { label: '액티비티', slug: 'activity' },
-  { label: '뷰티', slug: 'beauty' },
-  { label: '춤', slug: 'dance' },
-  { label: '음악', slug: 'music' },
-];
+import HeaderCategoryMenu from './HeaderCategoryMenu.jsx';
 
 function Header() {
   const theme = useTheme();
@@ -54,23 +44,7 @@ function Header() {
           spacing={2.5}
           sx={{ flexWrap: 'wrap', rowGap: 1, justifyContent: 'center' }}
         >
-          {CATEGORY_NAV_LINKS.map(({ label, slug }) => (
-            <Button
-              key={slug}
-              component={Link}
-              to={`/class/${slug}`}
-              sx={{
-                color: 'text.primary',
-                fontSize: '0.85rem',
-                fontWeight: 700,
-                minWidth: 'auto',
-                p: 0,
-                '&:hover': { color: 'primary.main', bgcolor: 'transparent' },
-              }}
-            >
-              {label}
-            </Button>
-          ))}
+          <HeaderCategoryMenu />
           <Button
             component={Link}
             to="/host"

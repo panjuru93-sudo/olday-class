@@ -18,6 +18,7 @@ export function mapHostClassToCategory(row) {
 
   return {
     slug: row.id,
+    categorySlug: row.category,
     eyebrow: matched?.eyebrow ?? row.eyebrow ?? 'HOST',
     posterTitle: row.detail_title,
     detailTitle: row.detail_title,
